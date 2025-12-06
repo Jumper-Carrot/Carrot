@@ -20,7 +20,7 @@ see the official [Jumper documentation](https://jumper-app.com).
 ## 🤝 Contributing
 
 For detailed guidelines on how to contribute to the Carrot project (submitting bugs, feature requests, and Pull Requests), please see the 
-[CONTRIBUTING](./.github/CONTRIBUTING.md) file.
+[CONTRIBUTING](https://github.com/Jumper-Carrot/Carrot?tab=contributing-ov-file) section.
 
 
 
