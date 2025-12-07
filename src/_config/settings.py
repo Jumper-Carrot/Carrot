@@ -155,8 +155,11 @@ AWS_SECRET_ACCESS_KEY = os.getenv("S3_SECRET_ACCESS_KEY", None)
 AWS_STORAGE_BUCKET_NAME = os.getenv("S3_BUCKET_NAME", None)
 AWS_S3_ENDPOINT_URL = os.getenv("S3_ENDPOINT_URL", None)
 AWS_S3_CUSTOM_DOMAIN = os.getenv("S3_SERVER_URL", AWS_S3_ENDPOINT_URL)
-AWS_S3_SECURE_URLS = False
-AWS_S3_USE_SSL = False
+AWS_S3_SECURE_URLS = os.getenv("S3_SECURE_URLS", "true").lower() in (
+    "true",
+    "1",
+)
+AWS_S3_USE_SSL = os.getenv("S3_USE_SSL", "true").lower() in ("true", "1")
 AWS_REGION = os.getenv("S3_REGION", "us-east-1")
 PRESIGNED_URL_EXPIRES_IN = int(os.getenv("PRESIGNED_URL_EXPIRES_IN", "7200"))
 
@@ -264,9 +267,10 @@ if OIDC_ENABLED:
 
 # https://django-scim2.readthedocs.io/en/latest/
 SCIM_ENABLED = os.getenv("SCIM_ENABLED", "false").lower() in ("true", "1")
-SCIM_ALLOW_USER_DELETION = (
-    False if os.getenv("SCIM_ALLOW_USER_DELETION") == "False" else True
-)
+SCIM_ALLOW_USER_DELETION = os.getenv(
+    "SCIM_ALLOW_USER_DELETION", "false"
+).lower() in ("true", "1")
+
 SCIM_ALLOW_USER_CREATION_CONFLIT = os.getenv(
     "SCIM_ALLOW_USER_CREATION_CONFLIT", "false"
 ).lower() in ("true", "1")
@@ -347,8 +351,8 @@ if os.environ.get("DJANGO_LOG_FILE"):
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST", None)
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", "25"))
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").lower() in ("true", "1")
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", None)
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", None)
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "jumper@company.com")

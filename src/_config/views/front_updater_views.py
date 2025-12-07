@@ -1,11 +1,10 @@
 import re
+
 import requests
-from packaging.version import Version, InvalidVersion
-from rest_framework.decorators import (
-    api_view,
-)
-from rest_framework.response import Response
 from django.conf import settings
+from packaging.version import InvalidVersion, Version
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 @api_view(["GET"])
@@ -33,12 +32,14 @@ def get_versions_from_jumper_repository():
     response = requests.get(url)
     response.raise_for_status()  # raise error if HTTP code != 200
     releases = response.json()
+    # TODO: also support just major or minor versions indication.
     version_regex = re.compile(r"^\d+\.\d+\.\d+$")
     return [
         release["name"]
         for release in releases
         if "name" in release and version_regex.match(release["name"])
     ]
+
 
 def apply_version_limitation(versions):
     version_limit = settings.MAX_ALLOWED_VERSION
@@ -47,10 +48,10 @@ def apply_version_limitation(versions):
 
     print(f"Applying version limit: {version_limit}")
     limit_parts = version_limit.split(".")
-    
+
     while len(limit_parts) < 3:
         limit_parts.append("999")
-        
+
     limit_str = ".".join(limit_parts)
     limit_version = Version(limit_str)
 
@@ -64,11 +65,8 @@ def apply_version_limitation(versions):
     return filtered_versions
 
 
-
 def get_new_version_info(version_tag):
     url = f"https://github.com/LibertAntoine/Jumper/releases/download/{version_tag}/latest.json"
     response = requests.get(url)
     response.raise_for_status()  # raise error if HTTP code != 200
     return response.json()
-
-
