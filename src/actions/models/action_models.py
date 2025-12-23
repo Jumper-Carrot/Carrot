@@ -1,16 +1,18 @@
 import uuid
-from django.db import models
+
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinLengthValidator
+from django.db import models
 from django_resized import ResizedImageField
 from simple_history.models import HistoricalRecords
+
 from users.models import User
 
 
 def generate_thumbnail_path(instance, filename, uuid_value=None):
     """Generate path for thumbnail"""
-    ext = filename.split('.')[-1]
+    ext = filename.split(".")[-1]
     unique_id = uuid_value or uuid.uuid4().hex
     base_key = get_thumbnail_base_key(instance)
     return f"{base_key}{unique_id}.{ext}"
@@ -36,7 +38,7 @@ class Action(models.Model):
         validators=[MinLengthValidator(3)],
     )
     description = models.TextField(
-        max_length=500,
+        max_length=175,
         blank=True,
     )
     is_active = models.BooleanField(
