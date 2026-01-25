@@ -1,10 +1,12 @@
 from http import HTTPMethod
+
+from django.http import HttpResponse
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
 from users.serializers.user_serializers import UserProfilePictureSerializer
-from django.http import HttpResponse
-from django.urls import reverse
 
 
 class UserProfilePictureMixin:
@@ -18,7 +20,9 @@ class UserProfilePictureMixin:
         """Update user profile picture."""
         user = self.get_object()
         if not user.profile_picture:
-            return Response("No profile picture.", status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                "No profile picture.", status=status.HTTP_404_NOT_FOUND
+            )
         return HttpResponse(user.profile_picture, content_type="image/png")
 
     @action(

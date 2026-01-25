@@ -11,7 +11,10 @@ from rest_framework.response import Response
 from _config.permissions import IsOwner, IsReadOnly
 from users.models import User
 from users.permissions import IsActionManager, IsUserManager
-from users.serializers.user_serializers import UserSerializer
+from users.serializers.user_serializers import (
+    ShortUserSerializer,
+    UserSerializer,
+)
 
 from .user_profile_picture_mixin import UserProfilePictureMixin
 
@@ -27,7 +30,6 @@ class UserViewSet(viewsets.ModelViewSet, UserProfilePictureMixin):
 
     queryset = User.objects.all()
     model = User
-    serializer_class = UserSerializer
     pagination_class = UserPagination
     filter_backends = [OrderingFilter, SearchFilter, DjangoFilterBackend]
     ordering_fields = [
@@ -39,7 +41,7 @@ class UserViewSet(viewsets.ModelViewSet, UserProfilePictureMixin):
     ordering = ["username"]
     permission_classes = [IsAuthenticated, IsReadOnly | IsOwner | IsUserManager]
     search_fields = ["username", "email", "first_name", "last_name"]
-    filterset_fields = ["is_active", "system_role"]
+    filterset_fields = ["is_active", "system_role", "group"]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -95,3 +97,9 @@ class UserViewSet(viewsets.ModelViewSet, UserProfilePictureMixin):
                 == 0
             )
         return Response(False)
+
+    def get_serializer_class(self):
+        """Return the serializer class based on the action."""
+        if self.request.query_params.get("short") == "true":
+            return ShortUserSerializer
+        return UserSerializer
