@@ -282,6 +282,7 @@ SCIM_SERVICE_PROVIDER = {
     "GROUP_ADAPTER": "users.scim.SCIMGroup",
     "GROUP_MODEL": "users.models.Group",
     "BASE_LOCATION_GETTER": "_config.services.utils.get_full_domain_from_request",
+    "SERVICE_PROVIDER_CONFIG_MODEL": "users.scim.SCIMServiceProviderConfig",
     "GET_IS_AUTHENTICATED_PREDICATE": lambda _: True,
     "AUTH_CHECK_MIDDLEWARE": "users.scim.SCIMAuthCheckMiddleware",
     "AUTHENTICATION_SCHEMES": [
