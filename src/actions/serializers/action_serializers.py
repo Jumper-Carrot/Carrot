@@ -137,8 +137,8 @@ class ActionDetailedSerializer(ActionPlayableSerializer):
             }
         return rep
 
-    create_by = UserSerializer(read_only=True)
-    users = UserSerializer(many=True, read_only=True)
+    create_by = ShortUserSerializer(read_only=True)
+    users = ShortUserSerializer(many=True, read_only=True)
     user_ids = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), many=True, write_only=True, source="users"
     )

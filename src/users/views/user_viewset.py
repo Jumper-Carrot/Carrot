@@ -1,4 +1,5 @@
 import django_filters
+from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -10,6 +11,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from _config.permissions import IsOwner, IsReadOnly
+from actions.models.action_models import Action
 from users.models import Group, Role, User
 from users.permissions import IsActionManager, IsUserManager
 from users.serializers.user_serializers import (
@@ -39,10 +41,33 @@ class UserFilter(django_filters.FilterSet):
         to_field_name="id",
         conjoined=True,
     )
+    action = django_filters.NumberFilter(method="filter_by_action")
 
     class Meta:
         model = User
-        fields = ["is_active", "system_role", "groups", "roles"]
+        fields = ["is_active", "system_role", "groups", "roles", "action"]
+
+    def filter_by_action(self, queryset, name, value):
+        if not value:
+            return queryset
+
+        try:
+            action = Action.objects.get(pk=value)
+        except Action.DoesNotExist:
+            return queryset.none()
+
+        if action.is_public and action.is_active:
+            return queryset.filter(is_active=True)
+
+        if not action.is_active:
+            return queryset.none()
+
+        return queryset.filter(
+            Q(id__in=action.users.all())
+            | Q(groups__in=action.groups.all())
+            | Q(roles__in=action.roles.all())
+            | Q(groups__roles__in=action.roles.all())
+        ).distinct()
 
 
 class UserViewSet(viewsets.ModelViewSet, UserProfilePictureMixin):
