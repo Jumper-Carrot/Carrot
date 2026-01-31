@@ -194,6 +194,9 @@ class UserPreferences(models.Model):
         blank=True,
         null=True,
     )
+    hidden_actions = models.ManyToManyField(
+        "actions.Action", related_name="hidden_by_users", blank=True
+    )
 
 
 @receiver(post_save, sender=User)
