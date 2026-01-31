@@ -10,7 +10,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from _config.permissions import IsOwner, IsReadOnly
-from users.models import Group, User
+from users.models import Group, Role, User
 from users.permissions import IsActionManager, IsUserManager
 from users.serializers.user_serializers import (
     ShortUserSerializer,
@@ -33,10 +33,16 @@ class UserFilter(django_filters.FilterSet):
         to_field_name="id",
         conjoined=True,
     )
+    roles = django_filters.ModelMultipleChoiceFilter(
+        field_name="roles",
+        queryset=Role.objects.all(),
+        to_field_name="id",
+        conjoined=True,
+    )
 
     class Meta:
         model = User
-        fields = ["is_active", "system_role", "groups"]
+        fields = ["is_active", "system_role", "groups", "roles"]
 
 
 class UserViewSet(viewsets.ModelViewSet, UserProfilePictureMixin):

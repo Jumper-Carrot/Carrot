@@ -1,8 +1,9 @@
 from rest_framework import serializers
 
-from .group_serializers import GroupSerializer
-from .user_serializers import UserSerializer
 from users.models import Role
+
+from .group_serializers import GroupSerializer
+from .user_serializers import ShortUserSerializer
 
 
 class RoleSerializer(serializers.ModelSerializer):
@@ -26,7 +27,6 @@ class RoleSerializer(serializers.ModelSerializer):
 
 class RoleDetailedSerializer(RoleSerializer):
     """Detailed Serializer for Role model."""
+
     groups = GroupSerializer(many=True, read_only=True)
-    users = UserSerializer(many=True, read_only=True)
-
-
+    users = ShortUserSerializer(many=True, read_only=True)
