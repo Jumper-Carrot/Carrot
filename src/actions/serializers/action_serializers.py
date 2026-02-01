@@ -9,10 +9,7 @@ from actions.models.action_models import Action, get_thumbnail_base_key
 from users.models import Group, Role, User
 from users.serializers.group_serializers import GroupDetailedSerializer
 from users.serializers.role_serializers import RoleDetailedSerializer
-from users.serializers.user_serializers import (
-    ShortUserSerializer,
-    UserSerializer,
-)
+from users.serializers.user_serializers import ShortUserSerializer
 
 from .action_data_version_serializers import action_data_serializers
 
@@ -53,6 +50,8 @@ class ActionSerializer(serializers.ModelSerializer):
             "last_update",
             "data",
             "thumbnail_url",
+            "hasDelaybeforeRelaunch",
+            "delayBeforeRelaunch",
         ]
         read_only_fields = [
             "id",

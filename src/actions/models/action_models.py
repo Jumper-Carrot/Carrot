@@ -92,6 +92,17 @@ class Action(models.Model):
         blank=True,
     )
 
+    hasDelaybeforeRelaunch = models.BooleanField(
+        default=False,
+        help_text="Indicates if there is a delay before relaunching the action.",
+    )
+    delayBeforeRelaunch = models.PositiveIntegerField(
+        default=0,
+        help_text="Delay (in milliseconds) before relaunching the action.",
+        blank=True,
+        null=True,
+    )
+
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     data = GenericForeignKey("content_type", "object_id")
