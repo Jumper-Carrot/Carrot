@@ -2,6 +2,7 @@ import uuid
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import PermissionDenied
 from django.core.validators import MinLengthValidator
 from django.db import models
@@ -196,6 +197,11 @@ class UserPreferences(models.Model):
     )
     hidden_actions = models.ManyToManyField(
         "actions.Action", related_name="hidden_by_users", blank=True
+    )
+    custom_order = ArrayField(
+        base_field=models.IntegerField(),
+        default=list,
+        blank=True,
     )
 
 

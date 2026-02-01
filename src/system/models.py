@@ -52,3 +52,4 @@ class SystemInfo(SingletonModel):
 
     allow_action_sections = models.BooleanField(default=False)
     allow_users_to_hide_actions = models.BooleanField(default=False)
+    allow_custom_order = models.BooleanField(default=False)

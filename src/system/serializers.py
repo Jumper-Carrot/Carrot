@@ -19,6 +19,7 @@ class SystemInfoSerializer(serializers.ModelSerializer):
             "allow_user_custom_background_image",
             "allow_action_sections",
             "allow_users_to_hide_actions",
+            "allow_custom_order",
         ]
         read_only_fields = ["default_background_image_url"]
 

@@ -26,6 +26,7 @@ class UserPreferencesSerializer(serializers.ModelSerializer):
             "allow_showing_description",
             "custom_background_image_url",
             "hidden_actions",
+            "custom_order",
         ]
         read_only_fields = [
             "id",
