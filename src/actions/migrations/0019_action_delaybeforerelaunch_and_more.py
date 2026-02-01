@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name="action",
-            name="hasDelaybeforeRelaunch",
+            name="hasDelayBeforeRelaunch",
             field=models.BooleanField(
                 default=False,
                 help_text="Indicates if there is a delay before relaunching the action.",
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name="historicalaction",
-            name="hasDelaybeforeRelaunch",
+            name="hasDelayBeforeRelaunch",
             field=models.BooleanField(
                 default=False,
                 help_text="Indicates if there is a delay before relaunching the action.",

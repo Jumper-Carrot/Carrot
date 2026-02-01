@@ -50,8 +50,8 @@ class ActionSerializer(serializers.ModelSerializer):
             "last_update",
             "data",
             "thumbnail_url",
-            "hasDelaybeforeRelaunch",
-            "delayBeforeRelaunch",
+            "has_delay_before_relaunch",
+            "delay_before_relaunch",
         ]
         read_only_fields = [
             "id",

@@ -92,12 +92,12 @@ class Action(models.Model):
         blank=True,
     )
 
-    hasDelaybeforeRelaunch = models.BooleanField(
+    has_delay_before_relaunch = models.BooleanField(
         default=False,
         help_text="Indicates if there is a delay before relaunching the action.",
     )
-    delayBeforeRelaunch = models.PositiveIntegerField(
-        default=0,
+    delay_before_relaunch = models.PositiveIntegerField(
+        default=2000,
         help_text="Delay (in milliseconds) before relaunching the action.",
         blank=True,
         null=True,
