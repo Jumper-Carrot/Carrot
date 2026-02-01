@@ -187,6 +187,8 @@ class UserPreferences(models.Model):
     )
     disable_default_background_image = models.BooleanField(default=False)
     allow_showing_description = models.BooleanField(default=True)
+    allow_custom_order = models.BooleanField(default=True)
+    allow_sections = models.BooleanField(default=True)
     custom_background_image = ResizedImageField(
         size=settings.GALLERY_BACKGROUND_IMAGE_RESOLUTION,
         crop=["middle", "center"],

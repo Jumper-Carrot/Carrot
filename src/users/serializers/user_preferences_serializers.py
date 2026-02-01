@@ -24,6 +24,8 @@ class UserPreferencesSerializer(serializers.ModelSerializer):
             "id",
             "disable_default_background_image",
             "allow_showing_description",
+            "allow_custom_order",
+            "allow_sections",
             "custom_background_image_url",
             "hidden_actions",
             "custom_order",
