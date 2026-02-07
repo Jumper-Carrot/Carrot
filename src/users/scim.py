@@ -1,12 +1,15 @@
 import re
-from django.http import HttpResponse
-from django.contrib.auth import get_user_model
-from django_scim.adapters import SCIMUser as BaseSCIMUser, SCIMGroup as BaseSCIMGroup
-from users.models import Group
+
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+from django_scim.adapters import SCIMGroup as BaseSCIMGroup
+from django_scim.adapters import SCIMUser as BaseSCIMUser
 from django_scim.models import (
     SCIMServiceProviderConfig as DefaultSCIMServiceProviderConfig,
 )
+
+from users.models import Group
 
 
 class SCIMUser(BaseSCIMUser):
@@ -47,28 +50,34 @@ class SCIMUser(BaseSCIMUser):
     def _manage_unique_username(self):
         while True:
             user_with_same_username = (
-                get_user_model().objects.filter(username=self.obj.username).first()
+                get_user_model()
+                .objects.filter(username=self.obj.username)
+                .first()
             )
             if (
                 not user_with_same_username
-                or user_with_same_username.scim_external_id == self.obj.scim_external_id
+                or user_with_same_username.scim_external_id
+                == self.obj.scim_external_id
             ):
                 break
-            # use regex to found if username finish with "_number"
+            # If the username already exists, append or increment a suffix to make it unique
             if re.search(r"_\d+$", self.obj.username):
-                # if it's the case, increment the number
                 self.obj.username = re.sub(
                     r"_(\d+)$",
                     lambda x: "_" + str(int(x.group(1)) + 1),
                     self.obj.username,
                 )
-            self.obj.username = self.obj.username + "_1"
+            else:
+                self.obj.username = self.obj.username + "_1"
 
     def delete(self):
         if not settings.SCIM_ALLOW_USER_DELETION:
             super().delete()
         else:
             self.obj.__class__.objects.filter(id=self.id).is_active = False
+            self.obj.__class__.objects.filter(id=self.id).scim_external_id = (
+                None
+            )
             self.save()
 
 
@@ -77,7 +86,9 @@ class SCIMGroup(BaseSCIMGroup):
         super().from_dict(d)
         self.obj.id = None
         self.obj.scim_id = None
-        group = Group.objects.filter(scim_external_id=self.obj.scim_external_id).first()
+        group = Group.objects.filter(
+            scim_external_id=self.obj.scim_external_id
+        ).first()
         if group:
             group.name = self.obj.name
             self.obj = group
