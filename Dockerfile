@@ -14,6 +14,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
+RUN apt-get update && apt-get install -y curl
 RUN pip install --upgrade pip && pip install --no-cache-dir -e ".[${environment}]"
 
 # Run the application

@@ -16,6 +16,11 @@ services:
     command: python manage.py runserver 0.0.0.0:${CARROT_PORT:-9890}
     depends_on:
       - carrot-postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9890/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
   carrot-postgres:
     image: postgres:${POSTGRES_IMAGE_VERSION}

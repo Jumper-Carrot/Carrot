@@ -6,6 +6,7 @@ from rest_framework import routers
 from .services.swagger import swagger_urls
 from .views.app_info_views import get_app_info
 from .views.front_updater_views import check_update
+from .views.health import health_check
 
 router = routers.DefaultRouter(trailing_slash=False)
 
@@ -32,6 +33,7 @@ urlpatterns = [
             ]
         ),
     ),
+    path("health", health_check, name="health-check"),
     re_path(
         r"^static/(?P<path>.*)$", serve, {"document_root": settings.STATIC_ROOT}
     ),
