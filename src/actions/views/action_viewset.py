@@ -1,25 +1,29 @@
-from actions.permissions import IsActionWorkspaceMember
+from django.db.models import Exists, OuterRef, Q
 from rest_framework import viewsets
-from django.db.models import Q, Exists, OuterRef
-from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from users.permissions import IsActionManager
-from users.serializers.user_serializers import UserSerializer
-from users.serializers.group_serializers import GroupDetailedSerializer
-from users.serializers.role_serializers import RoleDetailedSerializer
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from actions.models.action_models import Action
-from users.models import User, Group, Role
-from actions.serializers.action_data_version_serializers import action_data_serializers
+from actions.permissions import IsActionWorkspaceMember
+from actions.serializers.action_data_version_serializers import (
+    action_data_serializers,
+)
 from actions.serializers.action_serializers import (
-    ActionSerializer,
     ActionDetailedSerializer,
     ActionPlayableSerializer,
+    ActionSerializer,
 )
 from system.models import SystemInfo
-from rest_framework.pagination import PageNumberPagination
+from users.models import Group, Role, User
+from users.permissions import IsActionManager
+from users.serializers.group_serializers import GroupDetailedSerializer
+from users.serializers.role_serializers import RoleDetailedSerializer
+from users.serializers.user_serializers import UserSerializer
 from workspaces.models import Workspace
+
 from .action_thumbnail_viewset import ActionThumbnailMixin
 
 
@@ -31,7 +35,11 @@ class ActionPagination(PageNumberPagination):
 
 class ActionViewSet(viewsets.ModelViewSet, ActionThumbnailMixin):
     model = Action
-    permission_classes = [IsAuthenticated, IsActionManager, IsActionWorkspaceMember]
+    permission_classes = [
+        IsAuthenticated,
+        IsActionManager,
+        IsActionWorkspaceMember,
+    ]
     filter_backends = [OrderingFilter, SearchFilter]
     pagination_class = ActionPagination
     ordering_fields = [
@@ -51,10 +59,10 @@ class ActionViewSet(viewsets.ModelViewSet, ActionThumbnailMixin):
             return Action.objects.all()
         user = self.request.user
         manager_workspaces = Workspace.objects.filter(
-            Q(users=user)
-            | Q(groups__user_set=user)
-            | Q(roles__users=user)
-            | Q(roles__groups__user_set=user),
+            Q(users_managers=user)
+            | Q(groups_managers__user_set=user)
+            | Q(roles_managers__users=user)
+            | Q(roles_managers__groups__user_set=user),
             id=OuterRef("workspace_id"),
         )
         qs = (
@@ -63,7 +71,9 @@ class ActionViewSet(viewsets.ModelViewSet, ActionThumbnailMixin):
             )
             .distinct()
             .select_related("workspace")
-            .prefetch_related("users", "groups", "roles__users", "roles__groups")
+            .prefetch_related(
+                "users", "groups", "roles__users", "roles__groups"
+            )
         )
         return qs
 
@@ -182,6 +192,8 @@ class ActionViewSet(viewsets.ModelViewSet, ActionThumbnailMixin):
                 | Q(is_public=True)  # Actions marked as public
             )
             .distinct()
-            .prefetch_related("users", "groups", "roles__users", "roles__groups")
+            .prefetch_related(
+                "users", "groups", "roles__users", "roles__groups"
+            )
         )
         return self.filter_queryset(queryset)

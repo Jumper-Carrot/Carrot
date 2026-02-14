@@ -20,8 +20,12 @@ class IsActionWorkspaceMember(BasePermission):
 
         return Workspace.objects.filter(
             Q(pk=obj.workspace.id),
-            Q(users=user)
-            | Q(groups__user_set=user)
-            | Q(roles__users=user)
-            | Q(roles__groups__user_set=user),
+            Q(users_managers=user)
+            | Q(groups_managers__user_set=user)
+            | Q(roles_managers__users=user)
+            | Q(roles_managers__groups__user_set=user)
+            | Q(actions_allowed_users=user)
+            | Q(actions_allowed_groups__user_set=user)
+            | Q(actions_allowed_roles__users=user)
+            | Q(actions_allowed_roles__groups__user_set=user),
         ).exists()

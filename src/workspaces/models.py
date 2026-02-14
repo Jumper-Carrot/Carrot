@@ -31,3 +31,18 @@ class Workspace(models.Model):
         related_name="workspaces_roles_managed",
         blank=True,
     )
+    actions_allowed_users = models.ManyToManyField(
+        User,
+        related_name="workspaces_actions_allowed_users",
+        blank=True,
+    )
+    actions_allowed_groups = models.ManyToManyField(
+        "users.Group",
+        related_name="workspaces_actions_allowed_groups",
+        blank=True,
+    )
+    actions_allowed_roles = models.ManyToManyField(
+        "users.Role",
+        related_name="workspaces_actions_allowed_roles",
+        blank=True,
+    )

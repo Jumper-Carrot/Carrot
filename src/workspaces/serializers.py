@@ -48,6 +48,27 @@ class DetailedWorkspaceSerializer(WorkspaceSerializer):
         write_only=True,
         source="roles_managers",
     )
+    actions_allowed_users = ShortUserSerializer(many=True, read_only=True)
+    actions_allowed_users_ids = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        many=True,
+        write_only=True,
+        source="actions_allowed_users",
+    )
+    actions_allowed_groups = GroupDetailedSerializer(many=True, read_only=True)
+    actions_allowed_groups_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all(),
+        many=True,
+        write_only=True,
+        source="actions_allowed_groups",
+    )
+    actions_allowed_roles = RoleDetailedSerializer(many=True, read_only=True)
+    actions_allowed_roles_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Role.objects.all(),
+        many=True,
+        write_only=True,
+        source="actions_allowed_roles",
+    )
 
     class Meta(WorkspaceSerializer.Meta):
         fields = WorkspaceSerializer.Meta.fields + [
@@ -58,4 +79,10 @@ class DetailedWorkspaceSerializer(WorkspaceSerializer):
             "users_managers_ids",
             "groups_managers_ids",
             "roles_managers_ids",
+            "actions_allowed_users",
+            "actions_allowed_users_ids",
+            "actions_allowed_groups",
+            "actions_allowed_groups_ids",
+            "actions_allowed_roles",
+            "actions_allowed_roles_ids",
         ]
