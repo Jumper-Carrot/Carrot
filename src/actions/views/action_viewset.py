@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from actions.models.action_models import Action
-from actions.permissions import IsActionWorkspaceMember
+from actions.permissions import IsActionWorkspaceManager
 from actions.serializers.action_data_version_serializers import (
     action_data_serializers,
 )
@@ -38,7 +38,7 @@ class ActionViewSet(viewsets.ModelViewSet, ActionThumbnailMixin):
     permission_classes = [
         IsAuthenticated,
         IsActionManager,
-        IsActionWorkspaceMember,
+        IsActionWorkspaceManager,
     ]
     filter_backends = [OrderingFilter, SearchFilter]
     pagination_class = ActionPagination
@@ -58,6 +58,7 @@ class ActionViewSet(viewsets.ModelViewSet, ActionThumbnailMixin):
         ):
             return Action.objects.all()
         user = self.request.user
+
         manager_workspaces = Workspace.objects.filter(
             Q(users_managers=user)
             | Q(groups_managers__user_set=user)
@@ -180,16 +181,49 @@ class ActionViewSet(viewsets.ModelViewSet, ActionThumbnailMixin):
         return Response(versions)
 
     def get_user_active_actions(self, user):
+        direct_action_q = (
+            Q(users=user)
+            | Q(groups__user_set=user)
+            | Q(roles__users=user)
+            | Q(roles__groups__user_set=user)
+            | Q(is_public=True)
+        )
+        restricted_ws = Workspace.objects.filter(
+            Q(actions_allowed_users__isnull=False)
+            | Q(actions_allowed_groups__isnull=False)
+            | Q(actions_allowed_roles__isnull=False)
+        ).values_list("id", flat=True)
+        allowed_ws_q = (
+            Q(
+                workspace__id__in=restricted_ws,
+                workspace__actions_allowed_users=user,
+            )
+            | Q(
+                workspace__id__in=restricted_ws,
+                workspace__actions_allowed_groups__user_set=user,
+            )
+            | Q(
+                workspace__id__in=restricted_ws,
+                workspace__actions_allowed_roles__users=user,
+            )
+            | Q(
+                workspace__id__in=restricted_ws,
+                workspace__actions_allowed_roles__groups__user_set=user,
+            )
+        )
+        unrestricted_ws = Workspace.objects.exclude(
+            id__in=restricted_ws
+        ).values_list("id", flat=True)
+        unrestricted_ws_q = (
+            Q(workspace__id__in=unrestricted_ws) & direct_action_q
+        )
+
         queryset = (
             Action.objects.filter(is_active=True)
             .filter(
-                Q(users=user)  # Actions linked to user
-                | Q(groups__user_set=user)  # Actions linked to user via group
-                | Q(roles__users=user)  # Actions linked to user via role
-                | Q(
-                    roles__groups__user_set=user
-                )  # Actions linked to user via role group
-                | Q(is_public=True)  # Actions marked as public
+                (Q(workspace__isnull=True) & direct_action_q)
+                | allowed_ws_q
+                | unrestricted_ws_q
             )
             .distinct()
             .prefetch_related(
