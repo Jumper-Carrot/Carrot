@@ -42,6 +42,9 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if not SystemInfo.get_instance().allow_action_workspaces:
             return Workspace.objects.none()
+        as_manager = self.request.query_params.get("as_manager") == "true"
+        if as_manager:
+            return self.get_user_workspaces(Workspace.objects.all())
         if not self.request.user.is_admin:
             return self.get_user_workspaces(Workspace.objects.all())
         return Workspace.objects.all()
