@@ -1,4 +1,5 @@
 from django.db import models
+
 from users.models import User
 
 
@@ -15,18 +16,18 @@ class Workspace(models.Model):
         blank=True,
         null=True,
     )
-    users = models.ManyToManyField(
+    users_managers = models.ManyToManyField(
         User,
-        related_name="workspaces",
+        related_name="workspaces_users_managed",
         blank=True,
     )
-    groups = models.ManyToManyField(
+    groups_managers = models.ManyToManyField(
         "users.Group",
-        related_name="workspaces",
+        related_name="workspaces_groups_managed",
         blank=True,
     )
-    roles = models.ManyToManyField(
+    roles_managers = models.ManyToManyField(
         "users.Role",
-        related_name="workspaces",
+        related_name="workspaces_roles_managed",
         blank=True,
     )

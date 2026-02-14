@@ -62,10 +62,10 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
         user = self.request.user
         workspace_ids = (
             Workspace.objects.filter(
-                Q(users=user)
-                | Q(groups__user_set=user)
-                | Q(roles__users=user)
-                | Q(roles__groups__user_set=user)
+                Q(users_managers=user)
+                | Q(groups_managers__user_set=user)
+                | Q(roles_managers__users=user)
+                | Q(roles_managers__groups__user_set=user)
             )
             .values_list("id", flat=True)
             .distinct()
