@@ -1,8 +1,10 @@
 from abc import ABCMeta, abstractmethod
+from urllib.parse import urlparse
+
+from django.core.exceptions import ValidationError
 from django.db import models
 from simple_history.models import HistoricalRecords
-from django.core.exceptions import ValidationError
-from urllib.parse import urlparse
+
 
 class AbstractActionData(ABCMeta, type(models.Model)):
     pass
@@ -35,6 +37,17 @@ class ActionData(models.Model, metaclass=AbstractActionData):
 class PythonActionData(ActionData):
     TYPE = "Python"
     code = models.TextField(default="def run():\r\n    print('Hello world')")
+    use_combobox = models.BooleanField(default=False)
+    combobox_code = models.TextField(
+        default="def get_options(context):\r\n    return ['Option 1', 'Option 2']"
+    )
+
+
+class JavascriptActionData(ActionData):
+    TYPE = "Javascript"
+    code = models.TextField(
+        default="function run() {\n  console.log('Hello world') }\n\nmodule.exports = { run }"
+    )
     use_combobox = models.BooleanField(default=False)
     combobox_code = models.TextField(
         default="def get_options(context):\r\n    return ['Option 1', 'Option 2']"

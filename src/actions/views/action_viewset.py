@@ -8,9 +8,6 @@ from rest_framework.response import Response
 
 from actions.models.action_models import Action
 from actions.permissions import IsActionWorkspaceManager
-from actions.serializers.action_data_version_serializers import (
-    action_data_serializers,
-)
 from actions.serializers.action_serializers import (
     ActionDetailedSerializer,
     ActionPlayableSerializer,

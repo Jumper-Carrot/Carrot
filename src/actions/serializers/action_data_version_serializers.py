@@ -1,9 +1,11 @@
 from rest_framework import serializers
+
 from actions.models.action_data_models import (
-    PythonActionData,
-    LinkActionData,
-    WindowsCMDActionData,
     ActionData,
+    JavascriptActionData,
+    LinkActionData,
+    PythonActionData,
+    WindowsCMDActionData,
 )
 
 
@@ -22,6 +24,19 @@ class PythonActionDataSerializer(ActionDataSerializer):
 
     class Meta:
         model = PythonActionData
+        fields = ActionDataSerializer.Meta.fields + [
+            "code",
+            "use_combobox",
+            "combobox_code",
+        ]
+        read_only_fields = ActionDataSerializer.Meta.read_only_fields
+
+
+class JavascriptActionDataSerializer(ActionDataSerializer):
+    """Serializer for JavascriptActionData model."""
+
+    class Meta:
+        model = JavascriptActionData
         fields = ActionDataSerializer.Meta.fields + [
             "code",
             "use_combobox",
@@ -56,4 +71,5 @@ action_data_serializers = {
     PythonActionData.TYPE: PythonActionDataSerializer,
     LinkActionData.TYPE: LinkActionDataSerializer,
     WindowsCMDActionData.TYPE: WindowsCMDActionDataSerializer,
+    JavascriptActionData.TYPE: JavascriptActionDataSerializer,
 }
